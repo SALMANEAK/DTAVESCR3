@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عمال في متناول يدك</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #333; /* خلفية داكنة */
+            color: #fff; /* نص أبيض */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column; /* لتمكين عرض المحتوى بشكل عمودي */
+        }
+
+        h1 {
+            color: #FFCC00; /* أصفر */
+            margin-bottom: 20px;
+        }
+
+        .container {
+            width: 300px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #444; /* لون رمادي غامق */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            text-align: center; /* توسيط النص */
+            margin-bottom: 20px; /* مسافة بين الحاويات */
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #FFCC00; /* إطار أصفر */
+            border-radius: 5px;
+            background-color: #222; /* خلفية داكنة للحقل */
+            color: #fff; /* نص أبيض */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FFCC00; /* أصفر */
+            border: none;
+            border-radius: 5px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #FFD700; /* لون أصفر أفتح */
+        }
+
+        p {
+            margin-top: 10px;
+        }
+
+        a {
+            color: #FFCC00; /* أصفر */
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #workers-list {
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto; /* Scrollable */
+            padding: 10px;
+            border: 1px solid #FFCC00; /* إطار أصفر */
+            border-radius: 5px;
+            background-color: #222; /* خلفية داكنة */
+            display: none; /* إخفاء القائمة في البداية */
+        }
+
+        /* إطار الخفيف لعرض العمال */
+        .worker-card {
+            border: 1px solid rgba(255, 204, 0, 0.5); /* خط إطار رقيق */
+            border-radius: 5px;
+            background-color: #555; /* خلفية داكنة للبطاقة */
+            padding: 10px;
+            margin: 5px 0; /* مسافة بين بطاقات العمال */
+        }
+    </style>
+</head>
+<body>
+    <h1>عمال في متناول يدك</h1> <!-- اسم المشروع -->
+    <div class="container" id="signup-container">
+        <h2>إنشاء حساب جديد</h2>
+        <form id="signup-form">
+            <div class="input-group">
+                <label for="username">اسم المستخدم:</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">كلمة المرور:</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="input-group">
+                <label for="role">اختر نوع الحساب:</label>
+                <select id="role" required>
+                    <option value="user">باحث عن عامل</option>
+                    <option value="worker">عامل</option>
+                </select>
+            </div>
+            <button type="submit">إنشاء حساب</button>
+        </form>
+        <p>هل لديك حساب؟ <a href="#" id="show-login">تسجيل الدخول</a></p>
+    </div>
+
+    <div class="container" id="login-container" style="display: none;">
+        <h2>تسجيل الدخول</h2>
+        <form id="login-form">
+            <div class="input-group">
+                <label for="login-email">البريد الإلكتروني:</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="input-group">
+                <label for="login-password">كلمة المرور:</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button type="submit">تسجيل الدخول</button>
+        </form>
+        <p>ليس لديك حساب؟ <a href="#" id="show-signup">إنشاء حساب</a></p>
+    </div>
+
+    <div class="container" id="workers-container" style="display: none;">
+        <h2>العمال المتاحين</h2>
+        <div id="workers-list"></div>
+        <button onclick="window.location.reload()">عودة إلى الصفحة الرئيسية</button>
+    </div>
+
+    <div class="container" id="worker-details-container" style="display: none;">
+        <h2>إضافة تفاصيل العامل</h2>
+        <form id="worker-details-form">
+            <div class="input-group">
+                <label for="worker-job">المهنة:</label>
+                <input type="text" id="worker-job" required>
+            </div>
+            <div class="input-group">
+                <label for="worker-skills">المهارات:</label>
+                <input type="text" id="worker-skills" required>
+            </div>
+            <div class="input-group">
+                <label for="worker-experience">سنوات الخبرة:</label>
+                <input type="number" id="worker-experience" required>
+            </div>
+            <div class="input-group">
+                <label for="worker-location">مكان العمل:</label>
+                <input type="text" id="worker-location" required>
+            </div>
+            <div class="input-group">
+                <label for="worker-phone">رقم الهاتف:</label>
+                <input type="tel" id="worker-phone" required>
+            </div>
+            <button type="submit">نشر المعلومات</button>
+        </form>
+        <button onclick="window.location.href='index.html'">عودة إلى تسجيل الدخول</button>
+    </div>
+
+    <script>
+        // نموذج لتخزين بيانات المستخدم
+        const users = JSON.parse(localStorage.getItem('users')) || []; // استرجاع المستخدمين من التخزين المحلي
+
+        // إضافة حدث عند إنشاء حساب
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value; // نوع الحساب
+
+            // تخزين المستخدم
+            users.push({ username, email, password, role });
+            localStorage.setItem('users', JSON.stringify(users)); // تحديث التخزين المحلي
+
+            alert('تم إنشاء الحساب بنجاح!');
+
+            if (role === 'worker') {
+                // توجيه إلى صفحة تفاصيل العامل
+                document.getElementById('signup-container').style.display = 'none';
+                document.getElementById('worker-details-container').style.display = 'block';
+            } else {
+                document.getElementById('signup-container').style.display = 'none';
+                document.getElementById('login-container').style.display = 'block'; // توجيه إلى صفحة تسجيل الدخول
+            }
+        });
+
+        // إضافة حدث عند تسجيل الدخول
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            // تحقق من المستخدم
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                alert('تم تسجيل الدخول بنجاح!');
+                // إذا كان المستخدم عاملًا، عرض صفحة تفاصيل العامل
+                if (user.role === 'worker') {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('worker-details-container').style.display = 'block'; // توجيه إلى تفاصيل العامل
+                } else {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('workers-container').style.display = 'block'; // توجيه إلى عرض العمال
+                    displayWorkers(); // عرض قائمة العمال
+                }
+            } else {
+                alert('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+            }
+        });
+
+        // عرض قائمة العمال
+        function displayWorkers() {
+            const workersList = document.getElementById('workers-list');
+            workersList.innerHTML = ''; // مسح القائمة الحالية
+
+            const workers = users.filter(u => u.role === 'worker'); // تصفية العمال
+            if (workers.length === 0) {
+                workersList.innerHTML = '<p>لا توجد عمال متاحين.</p>';
+            } else {
+                workers.forEach(worker => {
+                    const workerCard = document.createElement('div');
+                    workerCard.classList.add('worker-card');
+                    workerCard.innerHTML = `
+                        <strong>${worker.username}</strong><br>
+                        <strong>المهنة:</strong> ${worker.job || 'غير متوفر'}<br>
+                        <strong>المهارات:</strong> ${worker.skills || 'غير متوفر'}<br>
+                        <strong>سنوات الخبرة:</strong> ${worker.experience || 'غير متوفر'}<br>
+                        <strong>الموقع:</strong> ${worker.location || 'غير متوفر'}<br>
+                        <strong>رقم الهاتف:</strong> ${worker.phone || 'غير متوفر'}<br>
+                    `;
+                    workersList.appendChild(workerCard);
+                });
+            }
+            workersList.style.display = 'block'; // عرض قائمة العمال
+        }
+
+        // إضافة حدث عند نشر معلومات العامل
+        document.getElementById('worker-details-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const workerJob = document.getElementById('worker-job').value;
+            const workerSkills = document.getElementById('worker-skills').value;
+            const workerExperience = document.getElementById('worker-experience').value;
+            const workerLocation = document.getElementById('worker-location').value;
+            const workerPhone = document.getElementById('worker-phone').value;
+
+            // تحديث بيانات العامل في التخزين المحلي
+            const email = document.getElementById('login-email').value;
+            const worker = users.find(u => u.email === email);
+            if (worker) {
+                worker.job = workerJob;
+                worker.skills = workerSkills;
+                worker.experience = workerExperience;
+                worker.location = workerLocation;
+                worker.phone = workerPhone;
+                localStorage.setItem('users', JSON.stringify(users)); // تحديث التخزين المحلي
+                alert('تم نشر معلوماتك بنجاح!');
+                document.getElementById('worker-details-container').style.display = 'none';
+                document.getElementById('workers-container').style.display = 'block'; // العودة لعرض العمال
+                displayWorkers(); // عرض قائمة العمال
+            }
+        });
+
+        // إظهار نموذج تسجيل الدخول عند النقر على الرابط
+        document.getElementById('show-login').addEventListener('click', function() {
+            document.getElementById('signup-container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'block'; // إظهار نموذج تسجيل الدخول
+        });
+
+        // إظهار نموذج إنشاء حساب عند النقر على الرابط
+        document.getElementById('show-signup').addEventListener('click', function() {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('signup-container').style.display = 'block'; // إظهار نموذج إنشاء حساب
+        });
+    </script>
+</body>
+</html>
